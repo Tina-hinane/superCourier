@@ -1,30 +1,40 @@
-# Projet de Transformation des Données de Livraison
+# SuperCourier - Mini ETL Pipeline
 
-Ce projet vise à transformer et analyser les données de livraison en combinant plusieurs sources, en calculant des métriques importantes et en déterminant si une livraison est en retard ou à l'heure.
+## Description
+Ce projet implémente un pipeline ETL (Extract, Transform, Load) pour simuler et traiter des données de livraison. Le pipeline génère des données fictives, 
+les enrichit avec des informations météorologiques, calcule des temps de livraison exprimés en minutes et secondes, et sauvegarde les résultats dans un fichier CSV.
 
-## Étapes du Processus
+## Fonctionnement du pipeline
+1. **Extraction** :
+    - Les données de livraison sont générées et stockées dans une base de données SQLite.
+    - Les données météorologiques sont générées et sauvegardées dans un fichier JSON.
 
-### 1. Joindre les données
-Les données de livraison sont combinées avec d'autres sources, comme les données météorologiques, pour enrichir les informations disponibles.
+2. **Transformation** :
+    - Les données de livraison sont enrichies avec les conditions météorologiques basées sur la date et l'heure de collecte.
+    - Les distances, temps de base, et facteurs d'ajustement (type de colis, zone de livraison, météo, heures de pointe, etc.) sont calculés.
+    - Le temps de livraison est exprimé en minutes et secondes pour plus de précision.
+    - Les livraisons sont marquées comme "On Time" ou "Delayed" selon un seuil de retard.
 
-### 2. Calculer les durées de livraison
-Ajout d'une colonne calculant la durée réelle de livraison à partir des données brutes.
+3. **Chargement** :
+    - Les données transformées sont sauvegardées dans un fichier CSV (`deliveries.csv`).
 
-### 3. Enrichir avec les informations météorologiques
-Utilisation de la fonction `enrich_with_weather` pour ajouter une colonne contenant les conditions météorologiques associées à chaque livraison.
+## Structure du code
+- **`create_sqlite_database`** : Génère une base de données SQLite avec des données fictives de livraison.
+- **`generate_weather_data`** : Crée des données météorologiques fictives pour les 3 derniers mois.
+- **`extract_sqlite_data`** : Extrait les données de livraison depuis la base SQLite.
+- **`load_weather_data`** : Charge les données météorologiques depuis un fichier JSON.
+- **`enrich_with_weather`** : Ajoute les conditions météorologiques aux données de livraison.
+- **`transform_data`** : Transforme les données en calculant les temps de livraison et en ajoutant des colonnes enrichies.
+- **`save_results`** : Sauvegarde les résultats transformés dans un fichier CSV.
+- **`run_pipeline`** : Orchestration du pipeline ETL.
 
-### 4. Calculer les seuils de retard
-La fonction `calculate_delay_threshold` est utilisée pour calculer un seuil de retard basé sur plusieurs facteurs, comme la distance, le type de colis, la zone de livraison, les conditions météorologiques, etc.
+## Fichiers générés
+- **`supercourier_mini.db`** : Base de données SQLite contenant les données de livraison.
+- **`weather_data.json`** : Fichier JSON contenant les données météorologiques.
+- **`deliveries.csv`** : Fichier CSV contenant les données finales transformées.
 
-### 5. Déterminer si une livraison est en retard
-Une colonne `is_delayed` est ajoutée pour indiquer si la durée réelle de livraison dépasse le seuil de retard calculé.
-
-### 6. Ajouter le statut de la livraison
-Une colonne `status` est ajoutée pour indiquer si une livraison est "On-time" ou "Delayed".
-
-## Exemple d'Utilisation
-
-### Script SQL
-Pour visualiser les données transformées, utilisez la commande suivante dans un fichier SQL :
-```sql
-SELECT * FROM deliveries;
+## Exécution
+Lancer le pipeline avec la commande suivante :
+```bash
+python de-code-snippet.py
+```
